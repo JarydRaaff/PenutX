@@ -12,15 +12,17 @@ export default function Dashboard() {
     refreshInterval: 30_000,
   });
   const [updatingAll, setUpdatingAll] = useState(false);
-  const [filter, setFilter] = useState<'all' | 'running' | 'updates'>('all');
+  const [filter, setFilter] = useState<'all' | 'running' | 'updates' | 'unmanaged'>('all');
 
   const containers: ContainerSummary[] = data?.containers || [];
   const running = containers.filter((c) => c.state === 'running').length;
   const updatable = containers.filter((c) => c.updateAvailable).length;
+  const unmanaged = containers.filter((c) => !c.watchtowerEnabled).length;
 
   const visible = containers.filter((c) => {
     if (filter === 'running') return c.state === 'running';
     if (filter === 'updates') return c.updateAvailable;
+    if (filter === 'unmanaged') return !c.watchtowerEnabled;
     return true;
   });
 
@@ -48,6 +50,9 @@ export default function Dashboard() {
             {updatable > 0 && (
               <span className="text-buoy"> · {updatable} update{updatable !== 1 ? 's' : ''} available</span>
             )}
+            {unmanaged > 0 && (
+              <span className="text-hull-500"> · {unmanaged} not managed</span>
+            )}
           </p>
         </div>
         <button
@@ -60,7 +65,7 @@ export default function Dashboard() {
       </header>
 
       <nav className="flex items-center gap-1 mb-6 border-b border-hull-800">
-        {(['all', 'running', 'updates'] as const).map((f) => (
+        {(['all', 'running', 'updates', 'unmanaged'] as const).map((f) => (
           <button
             key={f}
             onClick={() => setFilter(f)}

@@ -7,6 +7,7 @@ import type { ContainerSummary } from '@/lib/docker';
 export function ContainerCard({ container }: { container: ContainerSummary }) {
   const [updating, setUpdating] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   async function handleUpdate() {
     setUpdating(true);
@@ -19,6 +20,21 @@ export function ContainerCard({ container }: { container: ContainerSummary }) {
       setMessage('Request failed');
     } finally {
       setUpdating(false);
+    }
+  }
+
+  const composeFile = container.labels['com.docker.compose.project.config_files'];
+  const composeService = container.labels['com.docker.compose.service'];
+  const snippet = '    labels:\n      - com.centurylinklabs.watchtower.enable=true';
+
+  async function handleCopy() {
+    try {
+      await navigator.clipboard.writeText(snippet);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      // Clipboard API can fail without HTTPS/permissions; snippet is still
+      // visible on screen to copy manually.
     }
   }
 
@@ -64,11 +80,38 @@ export function ContainerCard({ container }: { container: ContainerSummary }) {
               ? 'Update available'
               : container.watchtowerEnabled
                 ? 'Check & update'
-                : 'Watchtower disabled'}
+                : 'Not managed'}
         </button>
       </div>
 
       {message && <p className="mt-2 text-xs text-hull-400 font-mono">{message}</p>}
+
+      {!container.watchtowerEnabled && (
+        <div className="mt-3 border-t border-hull-800 pt-3">
+          <p className="text-xs text-hull-500 mb-2">
+            {composeFile ? (
+              <>
+                Add this under <span className="font-mono text-hull-400">{composeService}</span> in{' '}
+                <span className="font-mono text-hull-400 break-all">{composeFile}</span>, then{' '}
+                <span className="font-mono text-hull-400">docker compose up -d</span> from that folder:
+              </>
+            ) : (
+              <>Add this label to the container (no compose file detected — likely started with `docker run`):</>
+            )}
+          </p>
+          <div className="relative">
+            <pre className="text-xs font-mono text-hull-400 bg-hull-950 border border-hull-800 rounded-md p-2 overflow-x-auto whitespace-pre">
+              {snippet}
+            </pre>
+            <button
+              onClick={handleCopy}
+              className="focus-ring absolute top-1.5 right-1.5 text-xs px-2 py-0.5 rounded bg-hull-800 text-hull-400 hover:text-hull-300 border border-hull-700"
+            >
+              {copied ? 'Copied' : 'Copy'}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
