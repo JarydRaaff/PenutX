@@ -16,7 +16,7 @@ export function ContainerCard({ container }: { container: ContainerSummary }) {
     try {
       const res = await fetch(`/api/containers/${container.id}/update`, { method: 'POST' });
       const data = await res.json();
-      setMessage(data.ok ? 'Update triggered' : data.error);
+      setMessage(data.ok ? data.message || 'Update check triggered' : data.error);
     } catch (err) {
       setMessage('Request failed');
     } finally {
