@@ -1,0 +1,39 @@
+version: '3.9'
+
+services:
+  penutx:
+    # Swap this for the published image once you push to GHCR, e.g.:
+    # image: ghcr.io/YOUR_USERNAME/penutx:latest
+    build: .
+    container_name: penutx
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    environment:
+      - WATCHTOWER_URL=http://watchtower:8080
+      - WATCHTOWER_HTTP_API_TOKEN=${WATCHTOWER_HTTP_API_TOKEN:?set a token in .env}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    depends_on:
+      - watchtower
+    networks:
+      - penutx-net
+
+  watchtower:
+    image: containrrr/watchtower:latest
+    container_name: watchtower
+    restart: unless-stopped
+    environment:
+      - WATCHTOWER_HTTP_API_UPDATE=true
+      - WATCHTOWER_HTTP_API_TOKEN=${WATCHTOWER_HTTP_API_TOKEN:?set a token in .env}
+      - WATCHTOWER_HTTP_API_PERIODIC_POLLS=true
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_LABEL_ENABLE=true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - penutx-net
+
+networks:
+  penutx-net:
+    driver: bridge

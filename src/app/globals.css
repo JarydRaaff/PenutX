@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  background-image: radial-gradient(circle at 1px 1px, rgba(138, 182, 158, 0.08) 1px, transparent 0);
+  background-size: 24px 24px;
+}
+
+::selection {
+  background: #ff7a45;
+  color: #0b1210;
+}
+
+@layer utilities {
+  .focus-ring {
+    @apply outline-none focus-visible:ring-2 focus-visible:ring-buoy focus-visible:ring-offset-2 focus-visible:ring-offset-hull-950;
+  }
+}
