@@ -25,7 +25,7 @@ export function ContainerCard({ container }: { container: ContainerSummary }) {
 
   const composeFile = container.labels['com.docker.compose.project.config_files'];
   const composeService = container.labels['com.docker.compose.service'];
-  const snippet = '    labels:\n      - com.centurylinklabs.watchtower.enable=true';
+  const snippet = '    labels:\n      - com.centurylinklabs.watchtower.enable=false';
 
   async function handleCopy() {
     try {
@@ -80,7 +80,7 @@ export function ContainerCard({ container }: { container: ContainerSummary }) {
               ? 'Update available'
               : container.watchtowerEnabled
                 ? 'Check & update'
-                : 'Not managed'}
+                : 'Excluded'}
         </button>
       </div>
 
@@ -89,14 +89,15 @@ export function ContainerCard({ container }: { container: ContainerSummary }) {
       {!container.watchtowerEnabled && (
         <div className="mt-3 border-t border-hull-800 pt-3">
           <p className="text-xs text-hull-500 mb-2">
-            {composeFile ? (
+            This container is labeled to skip automatic updates. To include it again, remove this
+            line{composeFile ? (
               <>
-                Add this under <span className="font-mono text-hull-400">{composeService}</span> in{' '}
+                {' '}from <span className="font-mono text-hull-400">{composeService}</span> in{' '}
                 <span className="font-mono text-hull-400 break-all">{composeFile}</span>, then{' '}
                 <span className="font-mono text-hull-400">docker compose up -d</span> from that folder:
               </>
             ) : (
-              <>Add this label to the container (no compose file detected — likely started with `docker run`):</>
+              <> from the container&apos;s labels and recreate it:</>
             )}
           </p>
           <div className="relative">

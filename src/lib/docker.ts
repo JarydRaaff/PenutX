@@ -41,12 +41,10 @@ export async function listContainers(): Promise<ContainerSummary[]> {
         type: p.Type,
       })),
       labels,
-      // Penutx's shipped docker-compose.yml sets WATCHTOWER_LABEL_ENABLE=true
-      // on the Watchtower service, which puts it in opt-in mode: only
-      // containers explicitly labeled true are managed. So we treat a
-      // container as managed only when the label is explicitly "true",
-      // not merely "not false".
-      watchtowerEnabled: labels[LABEL_ENABLE] === 'true',
+      // Penutx's shipped docker-compose.yml runs Watchtower in opt-out mode
+      // (no WATCHTOWER_LABEL_ENABLE): every container is managed by default,
+      // and only containers explicitly labeled false are excluded.
+      watchtowerEnabled: labels[LABEL_ENABLE] !== 'false',
       updateAvailable: false,
     };
   });

@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
   penutx:
     # Swap this for the published image once you push to GHCR, e.g.:
@@ -28,7 +26,14 @@ services:
       - WATCHTOWER_HTTP_API_TOKEN=${WATCHTOWER_HTTP_API_TOKEN:?set a token in .env}
       - WATCHTOWER_HTTP_API_PERIODIC_POLLS=true
       - WATCHTOWER_CLEANUP=true
-      - WATCHTOWER_LABEL_ENABLE=true
+      # Pin to your host's Docker API version if Watchtower crash-loops with
+      # "client version too old" — check yours with:
+      #   docker version --format '{{.Server.APIVersion}}'
+      - DOCKER_API_VERSION=1.55
+      # Opt-out mode: every container is managed by default. To exclude a
+      # specific container, label it com.centurylinklabs.watchtower.enable=false.
+      # (Switch to opt-in instead by adding WATCHTOWER_LABEL_ENABLE=true here
+      # and labeling containers =true individually.)
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
