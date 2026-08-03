@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { StatusBadge } from './StatusBadge';
+import { ProgressBar } from './ProgressBar';
 import type { ContainerSummary } from '@/lib/docker';
 
 export function ContainerCard({ container }: { container: ContainerSummary }) {
@@ -84,6 +85,7 @@ export function ContainerCard({ container }: { container: ContainerSummary }) {
         </button>
       </div>
 
+      {updating && <ProgressBar />}
       {message && <p className="mt-2 text-xs text-hull-400 font-mono">{message}</p>}
 
       {!container.watchtowerEnabled && (

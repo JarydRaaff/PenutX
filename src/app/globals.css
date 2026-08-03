@@ -17,3 +17,29 @@ body {
     @apply outline-none focus-visible:ring-2 focus-visible:ring-buoy focus-visible:ring-offset-2 focus-visible:ring-offset-hull-950;
   }
 }
+
+/* Indeterminate progress bar: Watchtower's API blocks until it's done and
+   doesn't report real percentage, so this shows "work is happening"
+   rather than an actual completion fraction. */
+@keyframes progress-indeterminate {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(250%);
+  }
+}
+
+.progress-track {
+  position: relative;
+  overflow: hidden;
+  background: rgba(138, 182, 158, 0.12);
+}
+
+.progress-bar {
+  position: absolute;
+  inset: 0;
+  width: 40%;
+  background: linear-gradient(90deg, transparent, #ff7a45, transparent);
+  animation: progress-indeterminate 1.1s ease-in-out infinite;
+}

@@ -3,6 +3,7 @@
 import useSWR from 'swr';
 import { useState } from 'react';
 import { ContainerCard } from '@/components/ContainerCard';
+import { ProgressBar } from '@/components/ProgressBar';
 import type { ContainerSummary } from '@/lib/docker';
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
@@ -55,13 +56,16 @@ export default function Dashboard() {
             )}
           </p>
         </div>
-        <button
-          onClick={handleUpdateAll}
-          disabled={updatingAll}
-          className="focus-ring text-sm font-medium rounded-md px-4 py-2 bg-hull-800 text-hull-300 border border-hull-700 hover:border-hull-600 disabled:opacity-40 transition-colors flex-shrink-0"
-        >
-          {updatingAll ? 'Triggering…' : 'Update all'}
-        </button>
+        <div className="flex-shrink-0 w-40">
+          <button
+            onClick={handleUpdateAll}
+            disabled={updatingAll}
+            className="focus-ring w-full text-sm font-medium rounded-md px-4 py-2 bg-hull-800 text-hull-300 border border-hull-700 hover:border-hull-600 disabled:opacity-40 transition-colors"
+          >
+            {updatingAll ? 'Triggering…' : 'Update all'}
+          </button>
+          {updatingAll && <ProgressBar />}
+        </div>
       </header>
 
       <nav className="flex items-center gap-1 mb-6 border-b border-hull-800">
